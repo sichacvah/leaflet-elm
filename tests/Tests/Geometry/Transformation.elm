@@ -51,3 +51,12 @@ untransformWithoutScale =
         p2 = Point 10.0 20.0
     in
         assertEqual (t.untransform p1 Nothing) p2
+
+
+all : Test
+all =
+    suite
+        "Leaflet.Geometry.Transformation"
+        [ transformSuite
+        , untransformSuite
+        ]

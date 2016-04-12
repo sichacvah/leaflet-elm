@@ -8,6 +8,7 @@ import Tests.Geometry.Point as Point
 import Tests.Geometry.Transformation as Transformation
 import Tests.Geometry.Bounds as Bounds
 import Tests.Geo.Projection.Merkator as Merkator
+import Tests.Geo.Projection.SphericalMerkator as SMerkator
 
 
 mainSuite : Test
@@ -16,10 +17,9 @@ mainSuite =
         "Run all tests"
         [ Point.all
         , Bounds.all
-        , Transformation.transformSuite
-        , Transformation.untransformSuite
-        , Merkator.projectSuite
-        , Merkator.unProjectSuite
+        , Transformation.all
+        , Merkator.all
+        , SMerkator.all
         ]
 
 

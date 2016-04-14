@@ -1,11 +1,17 @@
-module Leaflet.Geo.CRS.Update.Earth (..) where
+module Leaflet.Geo.CRS.Earth (..) where
 
-import Leaflet.Geo.CRS.Update.CRS as CRS
+import Leaflet.Geo.Models exposing (..)
+import Leaflet.Geo.CRS.CRS as Crs
 
 
 wrapLng : ( Float, Float )
 wrapLng =
     ( -180, 180 )
+
+
+infinity : Bool
+infinity =
+    Crs.infinity
 
 
 r : Float
@@ -29,4 +35,4 @@ distance latLng1 latLng2 =
 
 wrapLatLng : LatLng -> LatLng
 wrapLatLng =
-    CRS.wrapLatLng wrapLatLng Nothing
+    Crs.wrapLatLng wrapLatLng Nothing

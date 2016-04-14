@@ -7,7 +7,7 @@ add : Point -> Point -> Point
 add point1 point2 =
     { point1
         | x = point1.x + point2.x
-        , y = point2.y + point2.y
+        , y = point1.y + point2.y
     }
 
 
@@ -62,8 +62,8 @@ floorPoint point =
 ceilPoint : Point -> Point
 ceilPoint point =
     { point
-        | x = ceiling Point.x
-        , y = ceiling Point.y
+        | x = toFloat <| ceiling point.x
+        , y = toFloat <| ceiling point.y
     }
 
 

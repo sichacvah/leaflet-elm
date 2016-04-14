@@ -1,6 +1,10 @@
 module Leaflet.Geometry.Models (..) where
 
 
+type alias TransformFuncType =
+    Point -> Maybe Float -> Point
+
+
 type alias Transformation =
     { transform : Point -> Maybe Float -> Point
     , untransform : Point -> Maybe Float -> Point
@@ -34,8 +38,8 @@ initBounds point1 point2 =
 
 
 initPoint : Bool -> Float -> Float -> Point
-initPoint round x y =
-    if round then
-        Point (round x) (round y)
+initPoint needRound x y =
+    if needRound then
+        Point (toFloat (round x)) (toFloat (round y))
     else
         Point x y

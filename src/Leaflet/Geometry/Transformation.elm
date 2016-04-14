@@ -1,22 +1,31 @@
 module Leaflet.Geometry.Transformation (..) where
 
-import Leaflet.Geometry.Models exposing (Transformation, Point)
+import Leaflet.Geometry.Models exposing (Transformation, Point, TransformFuncType)
+import Monocle.Iso exposing (Iso)
 
 
-type alias TransformFuncType =
-    Point -> Maybe Float -> Point
+scale : Maybe Float -> Float
+scale mbS =
+    Maybe.withDefault 1 mbS
+
+
+initTransformationIso : ( Float, Float, Float, Float ) -> Iso ( Maybe Float, Point ) ( Maybe Float, Point )
+initTransformationIso floats =
+    let
+        get ( maybeScale, point ) = ( maybeScale, transform floats point maybeScale )
+
+        reverseGet ( maybeScale, point ) = ( maybeScale, untransform floats point maybeScale )
+    in
+        Iso get reverseGet
 
 
 transform : ( Float, Float, Float, Float ) -> TransformFuncType
-transform ( a, b, c, d ) transformation point maybeScale =
+transform ( a, b, c, d ) point maybeScale =
     let
         scale =
             Maybe.withDefault 1 maybeScale
     in
-        { point
-            | x = scale * (a * point.x + b)
-            , y = scale * (c * point.y + d)
-        }
+        Point (scale * (a * point.x + b)) (scale * (c * point.y + d))
 
 
 untransform : ( Float, Float, Float, Float ) -> TransformFuncType

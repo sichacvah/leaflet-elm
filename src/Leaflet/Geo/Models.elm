@@ -1,7 +1,6 @@
 module Leaflet.Geo.Models (..) where
 
-import Leaflet.Geometry.Models exposing (Bounds, Point, initBounds, TransformFuncType)
-import Leaflet.Geo.Update exposing (..)
+import Leaflet.Geometry.Models exposing (Bounds, Point, initBounds, TransformFuncType, Transformation)
 
 
 type alias LatLng =
@@ -24,41 +23,45 @@ type alias Projection =
     }
 
 
+type alias ScaleFunc =
+    Float -> Float
+
+
+type alias ZoomFunc =
+    Float -> Float
+
+
+type alias DistanceFunc =
+    LatLng -> LatLng -> Float
+
+
+type alias PointToLatLng =
+    Point -> Float -> LatLng
+
+
+type alias WrapFunc =
+    LatLng -> LatLng
+
+
+type alias BoundsFunc =
+    Float -> Maybe Bounds
+
+
+type alias LatLngToPoint =
+    LatLng -> Float -> Point
+
+
 type alias CRS =
     { transformation : Transformation
     , projection : Projection
-    , scale : Float -> Float
-    , zoom : Float -> Float
-    , distance : LatLng -> LatLng -> Float
-    , latLngToPoint : LatLng -> Float -> Point
-    , pointToLatLng : Point -> Float -> LatLng
-    , wrapLatLng : LatLng -> LatLng
-    , getProjectedBounds : Float -> Maybe Bounds
+    , scale : ScaleFunc
+    , zoom : ZoomFunc
+    , distance : DistanceFunc
+    , latLngToPoint : LatLngToPoint
+    , pointToLatLng : PointToLatLng
+    , wrapLatLng : WrapFunc
+    , getProjectedBounds : BoundsFunc
+    , infinity : Bool
+    , code : String
+    , distance : DistanceFunc
     }
-
-
-initCrs : CRSType -> CRS
-initCrs crsType =
-    CRS
-        transformation
-        crsType
-        projection
-        crsType
-        scale
-        crsType
-        zoom
-        crsType
-        distance
-        crsType
-        latLngToPoint
-        crsType
-        pointToLatLng
-        crsType
-        wrapLatLng
-        crsType
-        pointToLatLng
-        crsType
-        wrapLatLng
-        crsType
-        getProjectedBounds
-        crsType

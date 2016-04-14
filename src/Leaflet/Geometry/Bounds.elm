@@ -30,7 +30,7 @@ getBottomLeft bounds =
 
 getTopRight : Bounds -> Point
 getTopRight bounds =
-    Point bounds.max.x bounds.min.y
+    Point bounds.max.x bounds.max.y
 
 
 getSize : Bounds -> Point
@@ -66,7 +66,7 @@ intersects bounds1 bounds2 =
 
         min2 = bounds2.min
 
-        max1 = buunds1.max
+        max1 = bounds1.max
 
         max2 = bounds2.max
 

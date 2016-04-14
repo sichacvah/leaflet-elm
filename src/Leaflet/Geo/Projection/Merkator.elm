@@ -1,17 +1,12 @@
 module Leaflet.Geo.Projection.Merkator (..) where
 
-import Leaflet.Geometry.Models exposing (LatLng, Projection)
+import Leaflet.Geo.Models exposing (LatLng, Projection)
 import Leaflet.Geometry.Models exposing (Bounds, Point, initBounds)
 
 
 r : Float
 r =
     6378137
-
-
-d : Float
-d =
-    pi / 180
 
 
 rMinor : Float
@@ -24,9 +19,9 @@ tmp =
     rMinor / r
 
 
-e : Float
-e =
-    sqrt (1 - tmp ^ 2)
+es : Float
+es =
+    sqrt (1 - tmp * tmp)
 
 
 bounds : Bounds
@@ -40,44 +35,52 @@ bounds =
 
 
 project : LatLng -> Point
-porject latLng =
+project latLng =
     let
+        d = pi / 180
+
         y = latLng.lat * d
 
         tmp = rMinor / r
 
-        con = e * sin <| y
+        con = es * (sin y)
 
-        ts = (tan <| pi / 4 - y / 2) / ((1 - con) / (1 + con) ^ (e / 2))
+        ts = (tan (pi / 4 - y / 2)) / (((1 - con) / (1 + con)) ^ (es / 2))
 
-        yCoord = (negate r) * log <| max ts 1.0e-10
+        yCoord = (negate r) * (logBase e (max ts 1.0e-10))
 
         xCoord = latLng.lng * d * r
     in
         Point xCoord yCoord
 
 
-updatePhi : Float -> Int -> Float -> Float
-updatePhi phi i dphi =
-    if i < 15 && (abs dphi) < 1.0e-7 then
+updatePhi : Float -> Float -> Int -> Float -> Float
+updatePhi ts phi i dphi =
+    if i < 15 && (abs dphi) > 1.0e-7 then
         let
-            con = ((1 - e * (sin phi)) / (1 + e * (sin phi))) ^ (e / 2)
+            con' = es * (sin phi)
+
+            con = ((1 - con') / (1 + con')) ^ (es / 2)
+
+            dphi' = pi / 2 - 2 * (atan (ts * con)) - phi
+
+            phi' = phi + dphi'
         in
-            (updatePhi phi (i + 1))
-                <| phi
-                + (pi / 2 - 2 * (atan <| ts * con) - phi)
+            updatePhi ts phi' (i + 1) dphi'
     else
-        dphi
+        phi
 
 
 unproject : Point -> LatLng
 unproject point =
     let
-        ts = exp <| (negate point.y) / r
+        d = 180 / pi
+
+        ts = e ^ ((0 - point.y) / r)
 
         phi = pi / 2 - 2 * (atan ts)
     in
-        LatLng ((updatePhi phi 0 phi) * d) (point.x * d / r) Nothing
+        LatLng ((updatePhi ts phi 0 0.1) * d) (point.x * d / r) Nothing
 
 
 initProjection : Projection

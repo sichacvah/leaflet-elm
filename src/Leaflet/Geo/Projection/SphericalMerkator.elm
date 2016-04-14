@@ -19,13 +19,13 @@ project latLng =
     let
         d = pi / 180
 
-        maximum = maxLatitude
+        max' = maxLatitude
 
-        lat = max <| (min max latLng.lat) (negate maximum)
+        lat = max (min max' latLng.lat) (negate max')
 
         sinLat = sin <| lat * d
     in
-        Point (r * latLng.lng * d) (r * log <| (1 + sinLat) / (1 - sinLat) / 2)
+        Point (r * latLng.lng * d) (r * logBase e ((1 + sinLat) / (1 - sinLat)) / 2)
 
 
 unproject : Point -> LatLng
@@ -34,7 +34,7 @@ unproject point =
         d = 180 / pi
     in
         LatLng
-            (2 * d * (atan (exp <| point.y / r) - (pi / 2)))
+            ((2 * (atan (e ^ (point.y / r))) - pi / 2) * d)
             (point.x * d / r)
             Nothing
 

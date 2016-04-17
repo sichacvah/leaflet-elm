@@ -7,37 +7,44 @@ import Monocle.Iso exposing (Iso)
 import Monocle.Lens exposing (Lens)
 
 
+type CRSBase =
+  CRSBase
+  { latLngToPoint : Zoom -> LatLng -> Point
+  , pointToLatLng : Zoom -> Point -> LatLng
+  , getProjectedBounds : Float -> LatLngBounds
+  , wrapLatLng : LatLng -> LatLng
+  , infinity : Bool
+  }
+
+
+
+crsConstructor : Projection -> Transformation -> ( Iso Float Float ) -> Bool -> CRSBase
+crsConstructor projection transformation scaleIso  infinity =
+  CRSBase
+  { latLngToPoint = (latLngToPointFactory transformation projection scaleIso.get)
+  , pointToLatLng = (pointToLatLngFactory transformation projection scaleIso.get)
+  , getProjectedBounds = (getProjectedBounds infinity projection scaleIso.get)
+  , wrapLatLng = 
+  }
+
+
+
 infinity : Bool
 infinity =
     False
 
-
 scaleIso : Iso Float Float
 scaleIso =
-    let
-        get zoom = 256 * 2 ^ zoom
+  let 
+      get = (\zoom -> 256 * 2 ^ zoom)
 
-        reverseGet scale = logBase 2 (scale / 256)
-    in
-        Iso get reverseGet
+      reverseGet = (\scale -> logBase 2 (scalse / 256))
 
-
-projectIso : { projection : Projection } -> Iso LatLng Point
-projectIso { projection } =
-    Iso projection.project projection.unproject
+  in
+      Iso get reverseGet
 
 
-transformIso : { transformation : Transformation } -> Iso ( Maybe Float, Point ) ( Maybe Float, Point )
-transformIso { transformation } =
-    let
-        get ( scale, point ) = ( scale, transformation.transform point scale )
-
-        reverseGet ( scale, point ) = ( scale, transformation.untransform point scale )
-    in
-        Iso get reverseGet
-
-
-latLngToPointFactory : Transformation -> Projection -> ScaleFunc -> LatLngToPoint
+latLngToPointFactory : Transformation -> Projection -> (Float -> Float) -> LatLngToPoint
 latLngToPointFactory transformation projection scaleFunc latLng zoom =
     let
         scaled = Just (scaleFunc zoom)
@@ -47,7 +54,7 @@ latLngToPointFactory transformation projection scaleFunc latLng zoom =
         transformation.transform projectedPoint scaled
 
 
-pointToLatLngFactory : Transformation -> Projection -> ScaleFunc -> PointToLatLng
+pointToLatLngFactory : Transformation -> Projection -> (Float -> Float) -> PointToLatLng
 pointToLatLngFactory transformation projection scaleFunc point zoom =
     let
         scaled = Just (scaleFunc zoom)
@@ -57,7 +64,7 @@ pointToLatLngFactory transformation projection scaleFunc point zoom =
         projection.unproject untransformedPoint
 
 
-getProjectedBounds : Bool -> Projection -> ScleFunc -> (Point -> Maybe Float -> Point) -> BoundsFunc
+getProjectedBounds : Bool -> Projection -> (Float -> Float) -> (Point -> Maybe Float -> Point) -> BoundsFunc
 getProjectedBounds infinity projection scaleFunc transform zoom =
     if crs.inifinity then
         Nothing
@@ -92,3 +99,5 @@ wrapLatLng wrapLng wrapLat latLng =
         alt = latLng.alt
     in
         LatLng lat lng alt
+
+

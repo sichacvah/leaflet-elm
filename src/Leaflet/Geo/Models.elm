@@ -23,45 +23,13 @@ type alias Projection =
     }
 
 
-type alias ScaleFunc =
-    Float -> Float
-
-
-type alias ZoomFunc =
-    Float -> Float
-
-
-type alias DistanceFunc =
-    LatLng -> LatLng -> Float
-
-
-type alias PointToLatLng =
-    Point -> Float -> LatLng
-
-
-type alias WrapFunc =
-    LatLng -> LatLng
-
-
-type alias BoundsFunc =
-    Float -> Maybe Bounds
-
-
-type alias LatLngToPoint =
-    LatLng -> Float -> Point
-
-
 type alias CRS =
-    { transformation : Transformation
+    { latLngToPoint : Float -> LatLng -> Point
+    , pointToLatLng : Float -> Point -> LatLng
+    , getProjectedBounds : Float -> LatLngBounds
+    , wrapLatLng : LatLng -> LatLng
     , projection : Projection
-    , scale : ScaleFunc
-    , zoom : ZoomFunc
-    , distance : DistanceFunc
-    , latLngToPoint : LatLngToPoint
-    , pointToLatLng : PointToLatLng
-    , wrapLatLng : WrapFunc
-    , getProjectedBounds : BoundsFunc
+    , transformation : Transformation
     , infinity : Bool
     , code : String
-    , distance : DistanceFunc
     }

@@ -1,11 +1,11 @@
-module Leaflet.Geo.CRS.ESPG3857 (..) where
+module Leaflet.Geo.CRS.EPSG3857 (..) where
 
 import Leaflet.Geo.Models exposing (CRS, LatLng, Projection)
 import Leaflet.Geometry.Models exposing (Bounds, Point, initBounds, Transformation)
 import Leaflet.Geometry.Transformation exposing (initTransformation)
 import Leaflet.Geo.Projection.SphericalMerkator as SphericalMerkator
-import Leaflet.Geo.CRS.CRS as Crs
-import Leaflet.Geo.CRS.Earth as Earth
+import Leaflet.Geo.CRS.CRS exposing (scaleIso)
+import Leaflet.Geo.CRS.Earth exposing (earthConstructor)
 
 
 projection : Projection
@@ -21,11 +21,6 @@ transformation =
         initTransformation ( scale, 0.5, -scale, 0.5 )
 
 
-infinity : Bool
-infinity =
-    True
-
-
 code : String
 code =
     "ESPG3857"
@@ -33,16 +28,8 @@ code =
 
 initCrs : CRS
 initCrs =
-    CRS
-        transformation
+    earthConstructor
         projection
-        scale
-        zoom
-        Earth.distance
-        (latLngToPointFactory transformation projection scale)
-        (pointToLatLngFactory transformation projection scale)
-        (wrapLatLng infinity (Just Earth.wrapLatLng) Nothing)
-        (getProjectedBounds infinity projection scale transformation.transform)
-        infinity
+        transformation
+        scaleIso
         code
-        Earth.distance

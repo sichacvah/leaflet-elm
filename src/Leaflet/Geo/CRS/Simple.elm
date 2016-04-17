@@ -4,7 +4,8 @@ import Leaflet.Geo.Models exposing (..)
 import Leaflet.Geometry.Models exposing (Bounds, Point, initBounds, Transformation)
 import Leaflet.Geometry.Transformation exposing (initTransformation)
 import Leaflet.Geo.Projection.LonLat as LonLat
-import Leaflet.Geo.CRS.CRS as Crs
+import Leaflet.Geo.CRS.CRS exposing (crsConstructor)
+import Monocle.Iso exposing (Iso)
 
 
 projection : Projection
@@ -25,6 +26,11 @@ scale zoom =
 zoom : ScaleFunc
 zoom scale =
     logBase 2 scale
+
+
+scaleIso : Iso Float Float
+scaleIso =
+    Iso scale zoom
 
 
 distance : DistanceFunc
@@ -49,16 +55,11 @@ code =
 
 initCrs : CRS
 initCrs =
-    CRS
-        transformation
+    crsConstructor
         projection
-        scale
-        zoom
-        distance
-        (Crs.latLngToPointFactory transformation projection scale)
-        (Crs.pointToLatLngFactory transformation projection scale)
-        (Crs.wrapLatLng infinity Nothing Nothing)
-        (Crs.getProjectedBounds inifinity projection transformation.transform)
+        transformation
+        scaleIso
+        Nothing
+        Nothing
         infinity
         code
-        distance

@@ -7,44 +7,39 @@ import Monocle.Iso exposing (Iso)
 import Monocle.Lens exposing (Lens)
 
 
-type CRSBase =
-  CRSBase
-  { latLngToPoint : Zoom -> LatLng -> Point
-  , pointToLatLng : Zoom -> Point -> LatLng
-  , getProjectedBounds : Float -> LatLngBounds
-  , wrapLatLng : LatLng -> LatLng
-  , infinity : Bool
-  }
+type alias WrapCoord =
+    Maybe ( Float, Float )
 
 
-
-crsConstructor : Projection -> Transformation -> ( Iso Float Float ) -> Bool -> CRSBase
-crsConstructor projection transformation scaleIso  infinity =
-  CRSBase
-  { latLngToPoint = (latLngToPointFactory transformation projection scaleIso.get)
-  , pointToLatLng = (pointToLatLngFactory transformation projection scaleIso.get)
-  , getProjectedBounds = (getProjectedBounds infinity projection scaleIso.get)
-  , wrapLatLng = 
-  }
-
+crsConstructor : Projection -> Transformation -> Iso Float Float -> Bool -> WrapCoord -> WrapCoord -> CRS
+crsConstructor projection transformation scaleIso wrapLat wrapLng infinity code =
+    { latLngToPoint = (latLngToPointFactory transformation projection scaleIso.get)
+    , pointToLatLng = (pointToLatLngFactory transformation projection scaleIso.get)
+    , getProjectedBounds = (getProjectedBounds infinity projection scaleIso.get)
+    , wrapLatLng = (wrapLatLng wrapLat wrapLng)
+    , projection = projection
+    , transformation = transformation
+    , infinity = infinity
+    , code = code
+    }
 
 
 infinity : Bool
 infinity =
     False
 
+
 scaleIso : Iso Float Float
 scaleIso =
-  let 
-      get = (\zoom -> 256 * 2 ^ zoom)
+    let
+        get = (\zoom -> 256 * 2 ^ zoom)
 
-      reverseGet = (\scale -> logBase 2 (scalse / 256))
+        reverseGet = (\scale -> logBase 2 (scale / 256))
+    in
+        Iso get reverseGet
 
-  in
-      Iso get reverseGet
 
-
-latLngToPointFactory : Transformation -> Projection -> (Float -> Float) -> LatLngToPoint
+latLngToPointFactory : Transformation -> Projection -> (Float -> Float) -> LatLng -> Float -> Point
 latLngToPointFactory transformation projection scaleFunc latLng zoom =
     let
         scaled = Just (scaleFunc zoom)
@@ -81,7 +76,7 @@ getProjectedBounds infinity projection scaleFunc transform zoom =
             initBounds min max
 
 
-wrapLatLng : Maybe ( Float, Float ) -> Maybe ( Float, Float ) -> WrapFunc
+wrapLatLng : Maybe ( Float, Float ) -> Maybe ( Float, Float ) -> LatLng -> LatLng
 wrapLatLng wrapLng wrapLat latLng =
     let
         wrapIfNeed maybeWrap x =
@@ -99,5 +94,3 @@ wrapLatLng wrapLng wrapLat latLng =
         alt = latLng.alt
     in
         LatLng lat lng alt
-
-

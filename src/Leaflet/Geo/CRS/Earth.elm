@@ -1,17 +1,12 @@
 module Leaflet.Geo.CRS.Earth (..) where
 
 import Leaflet.Geo.Models exposing (..)
-import Leaflet.Geo.CRS.CRS as Crs
+import Leaflet.Geo.CRS.CRS exposing (crsConstructor)
 
 
 wrapLng : ( Float, Float )
 wrapLng =
     ( -180, 180 )
-
-
-infinity : Bool
-infinity =
-    Crs.infinity
 
 
 r : Float
@@ -33,6 +28,17 @@ distance latLng1 latLng2 =
         r * acos (min a 1)
 
 
-wrapLatLng : LatLng -> LatLng
-wrapLatLng =
-    Crs.wrapLatLng wrapLatLng Nothing
+infinity : Bool
+infinity =
+    True
+
+
+earthConstructor : Projection -> Transformation -> Iso Float Float -> String -> CRS
+earthConstructor projection transformation scaleIso code =
+    crsConstructor
+        projection
+        transformation
+        scaleIso
+        wrapLng
+        Nothing
+        infinity

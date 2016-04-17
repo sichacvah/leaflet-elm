@@ -13,9 +13,15 @@ formatNum num digits =
 wrapNum : Float -> ( Float, Float ) -> Bool -> Float
 wrapNum x ( min, max ) includeMax =
     let
-        d = max - min
+        x' = round x
+
+        min' = round min
+
+        max' = round max
+
+        d = max' - min'
     in
-        if includeMax && x == max then
-            x
+        if includeMax && x' == max' then
+            toFloat x'
         else
-            (x - min % d + d) % d + min
+            toFloat <| ((x' - min' % d) + d) % d + min'

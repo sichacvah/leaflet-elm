@@ -9,6 +9,7 @@ import Tests.Geometry.Transformation as Transformation
 import Tests.Geometry.Bounds as Bounds
 import Tests.Geo.Projection.Merkator as Merkator
 import Tests.Geo.Projection.SphericalMerkator as SMerkator
+import Tests.Geo.CRS.EPSG3857 as EPSG3857
 
 
 mainSuite : Test
@@ -20,6 +21,7 @@ mainSuite =
         , Transformation.all
         , Merkator.all
         , SMerkator.all
+        , EPSG3857.all
         ]
 
 

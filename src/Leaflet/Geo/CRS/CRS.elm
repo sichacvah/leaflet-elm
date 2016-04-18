@@ -11,22 +11,17 @@ type alias WrapCoord =
     Maybe ( Float, Float )
 
 
-crsConstructor : Projection -> Transformation -> Iso Float Float -> Bool -> WrapCoord -> WrapCoord -> CRS
+crsConstructor : Projection -> Transformation -> Iso Float Float -> WrapCoord -> WrapCoord -> Bool -> String ->  CRS
 crsConstructor projection transformation scaleIso wrapLat wrapLng infinity code =
-    { latLngToPoint = (latLngToPointFactory transformation projection scaleIso.get)
-    , pointToLatLng = (pointToLatLngFactory transformation projection scaleIso.get)
-    , getProjectedBounds = (getProjectedBounds infinity projection scaleIso.get)
-    , wrapLatLng = (wrapLatLng wrapLat wrapLng)
-    , projection = projection
-    , transformation = transformation
-    , infinity = infinity
-    , code = code
-    }
-
-
-infinity : Bool
-infinity =
-    False
+  CRS
+    (latLngToPointFactory transformation projection scaleIso.get)
+    (pointToLatLngFactory transformation projection scaleIso.get)
+    (getProjectedBounds infinity projection scaleIso.get transformation)
+    (wrapLatLng wrapLat wrapLng)
+    projection
+    transformation
+    (Debug.log "infinity" infinity)
+    code
 
 
 scaleIso : Iso Float Float
@@ -49,19 +44,19 @@ latLngToPointFactory transformation projection scaleFunc latLng zoom =
         transformation.transform projectedPoint scaled
 
 
-pointToLatLngFactory : Transformation -> Projection -> (Float -> Float) -> PointToLatLng
+pointToLatLngFactory : Transformation -> Projection -> (Float -> Float) -> Point -> Float -> LatLng
 pointToLatLngFactory transformation projection scaleFunc point zoom =
     let
         scaled = Just (scaleFunc zoom)
 
         untransformedPoint = transformation.untransform point scaled
     in
-        projection.unproject untransformedPoint
+        projection.uproject untransformedPoint
 
 
-getProjectedBounds : Bool -> Projection -> (Float -> Float) -> (Point -> Maybe Float -> Point) -> BoundsFunc
-getProjectedBounds infinity projection scaleFunc transform zoom =
-    if crs.inifinity then
+getProjectedBounds : Bool -> Projection -> (Float -> Float) -> Transformation -> Float -> (Maybe Bounds)
+getProjectedBounds infinity projection scaleFunc transformation zoom =
+    if infinity then
         Nothing
     else
         let
@@ -69,11 +64,12 @@ getProjectedBounds infinity projection scaleFunc transform zoom =
 
             s = scaleFunc zoom
 
-            min = transform b.min s
+            min = transformation.transform b.min  (Just s)
 
-            max = transform b.max s
+            max = transformation.transform b.max  (Just s)
         in
-            initBounds min max
+
+            Just (initBounds min max)
 
 
 wrapLatLng : Maybe ( Float, Float ) -> Maybe ( Float, Float ) -> LatLng -> LatLng
@@ -87,7 +83,7 @@ wrapLatLng wrapLng wrapLat latLng =
                 Just tuple ->
                     wrapNum x tuple True
 
-        lng = wrapNeed wrapLng latLng.lng
+        lng = wrapIfNeed wrapLng latLng.lng
 
         lat = wrapIfNeed wrapLat latLng.lat
 

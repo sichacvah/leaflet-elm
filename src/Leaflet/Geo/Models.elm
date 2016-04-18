@@ -24,12 +24,14 @@ type alias Projection =
 
 
 type alias CRS =
-    { latLngToPoint : Float -> LatLng -> Point
-    , pointToLatLng : Float -> Point -> LatLng
-    , getProjectedBounds : Float -> LatLngBounds
+    { latLngToPoint : LatLng -> Float -> Point
+    , pointToLatLng : Point -> Float -> LatLng
+    , getProjectedBounds : Float -> Maybe Bounds
     , wrapLatLng : LatLng -> LatLng
     , projection : Projection
     , transformation : Transformation
     , infinity : Bool
     , code : String
     }
+
+

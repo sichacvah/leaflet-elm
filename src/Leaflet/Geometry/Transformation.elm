@@ -8,7 +8,7 @@ scale mbS =
     Maybe.withDefault 1 mbS
 
 
-transform : ( Float, Float, Float, Float ) -> TransformFuncType
+transform : ( Float, Float, Float, Float ) -> Point -> Maybe Float -> Point
 transform ( a, b, c, d ) point maybeScale =
     let
         scale =
@@ -17,7 +17,7 @@ transform ( a, b, c, d ) point maybeScale =
         Point (scale * (a * point.x + b)) (scale * (c * point.y + d))
 
 
-untransform : ( Float, Float, Float, Float ) -> TransformFuncType
+untransform : ( Float, Float, Float, Float ) -> Point -> Maybe Float -> Point
 untransform ( a, b, c, d ) point maybeScale =
     let
         scale =

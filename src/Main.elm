@@ -13,7 +13,6 @@ type Action
     = NoOp
 
 
-
 -- MODEL
 
 

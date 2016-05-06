@@ -1,7 +1,12 @@
 module Leaflet.Layer.Models (..) where
 
-type alias Layer = 
-  { pane : Pane
+import Leaflet.Layer.Action exposing (..)
+import Leaflet.Geo.Models exposing (LatLng)
+
+
+type alias Model =
+  { latLng : LatLng
+  , pane : Pane
   }
 
 

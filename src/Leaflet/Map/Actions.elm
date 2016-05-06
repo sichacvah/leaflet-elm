@@ -5,9 +5,9 @@ import Leaflet.Map.Models exposing (Options)
 import Leaflet.Utils exposing (LatLng, Zoom, Delta)
 
 
-type Action
-    = NoOp
-    | SetView LatLng Zoom
-    | SetZoom Zoom
-    | ZoomIn Delta
-    | ZoomOut Delta
+type alias EventName = String
+
+
+type Action = 
+  NoOp
+  | FireEvent EventName
